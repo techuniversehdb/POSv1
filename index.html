@@ -1,0 +1,117 @@
+<!DOCTYPE html> 
+
+<html lang="en"> 
+
+<head> 
+
+<meta charset="UTF-8"> 
+
+<meta name="viewport" content="width=device-width,initial-scale=1"> 
+
+<title>Tech Universe POS</title> 
+
+ 
+
+<link rel="stylesheet" href="style.css"> 
+
+ 
+
+</head> 
+
+<body> 
+
+ 
+
+<header> 
+
+<h2>📱 Tech Universe POS</h2> 
+
+</header> 
+
+ 
+
+<div class="container"> 
+
+ 
+
+<div class="card"> 
+
+<h3>Today's Summary</h3> 
+
+ 
+
+<p>Total Sale: ₹<span id="sale">0</span></p> 
+
+ 
+
+<p>Total Recharge: ₹<span id="recharge">0</span></p> 
+
+ 
+
+<p>Products: <span id="products">0</span></p> 
+
+ 
+
+</div> 
+
+ 
+
+<div class="card"> 
+
+ 
+
+<h3>Add Product</h3> 
+
+ 
+
+<input id="name" placeholder="Product Name"> 
+
+ 
+
+<input id="buy" type="number" placeholder="Buying Price"> 
+
+ 
+
+<input id="sell" type="number" placeholder="Selling Price"> 
+
+ 
+
+<input id="stock" type="number" placeholder="Stock"> 
+
+ 
+
+<button onclick="addProduct()">Save Product</button> 
+
+ 
+
+</div> 
+
+ 
+
+<div class="card"> 
+
+ 
+
+<h3>Product List</h3> 
+
+ 
+
+<div id="productList"></div> 
+
+ 
+
+</div> 
+
+ 
+
+</div> 
+
+ 
+
+<script src="script.js"></script> 
+
+ 
+
+</body> 
+
+</html> 
