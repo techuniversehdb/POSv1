@@ -300,7 +300,7 @@ function renderProducts(){
     <div class="product-row">
       <div>
         <div class="pname">${p.name}</div>
-        <div class="pmeta">৳${p.price} · Stock: <span class="${p.stock<=2?'stock-low':''}">${p.stock}</span></div>
+        <div class="pmeta">Rs${p.price} · Stock: <span class="${p.stock<=2?'stock-low':''}">${p.stock}</span></div>
       </div>
       <div class="edit-icon" onclick="deleteProductRow('${p.id}')">✕</div>
     </div>
@@ -351,7 +351,7 @@ function setType(type){
   document.getElementById('typePurchase').classList.toggle('active', type==='Purchase');
   document.getElementById('typeRecharge').classList.toggle('active', type==='Recharge');
   document.getElementById('productField').style.display = type==='Purchase' ? 'block' : 'none';
-  document.getElementById('amountLabel').textContent = type==='Recharge' ? 'Recharge Amount (৳)' : 'Amount (৳)';
+  document.getElementById('amountLabel').textContent = type==='Recharge' ? 'Recharge Amount Rs' : 'Amount Rs';
   if(type==='Recharge') document.getElementById('amount').value='';
 }
 
@@ -363,12 +363,12 @@ async function saveSale(){
   let item = 'Mobile Recharge';
   let productId = null;
 
-  if(!customerName || !phone || !amount){ toast('Shob field pooron korun'); return; }
+  if(!customerName || !phone || !amount){ toast('Fill all'); return; }
 
   if(currentType === 'Purchase'){
     const sel = document.getElementById('productSelect');
     const opt = sel.options[sel.selectedIndex];
-    if(!opt){ toast('Product add korun age'); return; }
+    if(!opt){ toast('Add Product'); return; }
     item = opt.text;
     productId = opt.value;
   }
@@ -405,8 +405,8 @@ async function loadSummary(){
     const typeCard = document.getElementById('byTypeCard');
     const entries = Object.entries(s.byType || {});
     typeCard.innerHTML = entries.length ? entries.map(([k,v])=>`
-      <div class="sale-item"><div class="who">${k}</div><div class="amt">৳${Number(v).toLocaleString('en-IN')}</div></div>
-    `).join('') : '<div class="empty">Ekhono kono entry nei</div>';
+      <div class="sale-item"><div class="who">${k}</div><div class="amt">Rs${Number(v).toLocaleString('en-IN')}</div></div>
+    `).join('') : '<div class="empty">No Entries</div>';
 
     const listCard = document.getElementById('todaySalesCard');
     listCard.innerHTML = todaySales.length ? todaySales.map(s=>`
@@ -415,9 +415,9 @@ async function loadSummary(){
           <div class="who">#${s.serial} ${s.customerName}</div>
           <div class="meta"><span class="badge">${s.type}</span>${s.item}</div>
         </div>
-        <div class="amt">৳${s.amount}</div>
+        <div class="amt">Rs${s.amount}</div>
       </div>
-    `).join('') : '<div class="empty">Aaj ekhono kono sale hoyni</div>';
+    `).join('') : '<div class="empty">No Sales today</div>';
   }catch(e){ toast('Summary load hoyni: ' + e.message); }
 }
 
