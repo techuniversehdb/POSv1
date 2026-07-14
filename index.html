@@ -101,7 +101,7 @@
       <span style="color:var(--gold);font-family:'Poppins';font-weight:700;font-size:22px;">TU</span>
     </div>
     <h1 style="font-size:20px;">Tech Universe Setup</h1>
-    <p style="color:var(--muted);font-size:13px;margin-top:6px;">Google Apps Script Web App URL ta ekbar boshie din</p>
+    <p style="color:var(--muted);font-size:13px;margin-top:6px;">Google Apps Script Web App URL</p>
   </div>
   <div class="card">
     <label>Apps Script URL (…/exec ends with)</label>
@@ -124,10 +124,10 @@
         <div class="stat" style="background:var(--gold);color:var(--navy-deep);"><div class="label" style="color:var(--navy-deep);opacity:.7;">Entries</div><div class="value" id="homeCount">0</div></div>
       </div>
 
-      <div class="section-title">Type Onujayi</div>
+      <div class="section-title">Product Type</div>
       <div class="card" id="byTypeCard"></div>
 
-      <div class="section-title">Aajker Entries</div>
+      <div class="section-title">Todays Entries</div>
       <div class="card" id="todaySalesCard"><div class="empty">Loading...</div></div>
     </section>
 
@@ -150,7 +150,7 @@
           <select id="productSelect" onchange="onProductChange()"></select>
         </div>
 
-        <label id="amountLabel">Amount (৳)</label>
+        <label id="amountLabel">Amount</label>
         <input id="amount" type="number" inputmode="numeric" placeholder="0">
 
         <label>Payment Mode</label>
@@ -173,28 +173,28 @@
     <!-- PRODUCTS -->
     <section class="screen" id="screen-products">
       <div class="card">
-        <div class="section-title" style="margin-top:0;">Notun Product</div>
+        <div class="section-title" style="margin-top:0;">New Product</div>
         <label>Name</label>
         <input id="pName" placeholder="ex: Samsung M15 128GB">
-        <label>Price (৳)</label>
+        <label>Price Rs</label>
         <input id="pPrice" type="number" inputmode="numeric">
-        <label>Stock (koyta ache)</label>
+        <label>Stock</label>
         <input id="pStock" type="number" inputmode="numeric">
         <button class="btn btn-secondary" onclick="addProduct()">Add Product</button>
       </div>
-      <div class="section-title">Shob Product</div>
+      <div class="section-title">Shop Product</div>
       <div class="card" id="productsCard"><div class="empty">Loading...</div></div>
     </section>
 
     <!-- MEMO -->
     <section class="screen" id="screen-memo">
       <div class="card">
-        <div class="section-title" style="margin-top:0;">Ekta Entry Bechhe Nin</div>
+        <div class="section-title" style="margin-top:0;">Select Entry</div>
         <select id="memoSaleSelect" onchange="renderMemoPreview()"></select>
       </div>
       <div class="card">
         <div class="section-title" style="margin-top:0;">Cash Memo Preview</div>
-        <div class="memo-preview" id="memoPreview"><div class="empty">Kono entry bachai kore preview dekhun</div></div>
+        <div class="memo-preview" id="memoPreview"><div class="empty">Select entry preview</div></div>
         <button class="btn btn-primary" onclick="downloadMemoPdf()">Download PDF</button>
         <button class="btn btn-secondary" onclick="shareToWhatsapp()">Share on WhatsApp</button>
       </div>
