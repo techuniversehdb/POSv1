@@ -269,17 +269,19 @@ function toast(msg){
 }
 
 async function apiGet(action, params={}){
-  const q = new URLSearchParams({action, ...params}).toString();
+  const clean = {};
+  Object.keys(params).forEach(k => { if(params[k] !== null && params[k] !== undefined) clean[k]=params[k]; });
+  const q = new URLSearchParams({action, ...clean}).toString();
   const res = await fetch(`${SCRIPT_URL}?${q}`);
-  return res.json();
+  if(!res.ok) throw new Error('Network error: ' + res.status);
+  const json = await res.json();
+  if(json.error) throw new Error(json.error);
+  return json;
 }
+// Writes also go through GET — Apps Script's redirect turns POST into GET
+// and silently drops the body, so GET-with-params is the reliable pattern.
 async function apiPost(action, data){
-  const res = await fetch(SCRIPT_URL, {
-    method:'POST',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body: JSON.stringify({action, data})
-  });
-  return res.json();
+  return apiGet(action, data);
 }
 
 // ---------- PRODUCTS ----------
@@ -288,7 +290,7 @@ async function loadProducts(){
     products = await apiGet('getProducts');
     renderProducts();
     renderProductSelect();
-  }catch(e){ toast('Product load hoyni, connection check korun'); }
+  }catch(e){ toast('Product load hoyni: ' + e.message); }
 }
 
 function renderProducts(){
@@ -321,18 +323,26 @@ async function addProduct(){
   const price = document.getElementById('pPrice').value;
   const stock = document.getElementById('pStock').value;
   if(!name || !price){ toast('Name o Price din'); return; }
-  await apiPost('addProduct', {name, price, stock: stock||0});
-  document.getElementById('pName').value='';
-  document.getElementById('pPrice').value='';
-  document.getElementById('pStock').value='';
-  toast('Product added ✓');
-  loadProducts();
+  try{
+    await apiPost('addProduct', {name, price, stock: stock||0});
+    document.getElementById('pName').value='';
+    document.getElementById('pPrice').value='';
+    document.getElementById('pStock').value='';
+    toast('Product added ✓');
+    loadProducts();
+  }catch(err){
+    toast('Save hoyni: ' + err.message);
+  }
 }
 
 async function deleteProductRow(id){
   if(!confirm('Delete korte chan?')) return;
-  await apiPost('deleteProduct', {id});
-  loadProducts();
+  try{
+    await apiPost('deleteProduct', {id});
+    loadProducts();
+  }catch(err){
+    toast('Delete hoyni: ' + err.message);
+  }
 }
 
 // ---------- NEW SALE ----------
@@ -363,17 +373,25 @@ async function saveSale(){
     productId = opt.value;
   }
 
-  await apiPost('addSale', {
-    customerName, phone, type: currentType, item, amount, paymentMode, productId
-  });
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = 'Saving...';
 
-  toast('Entry saved ✓');
-  document.getElementById('custName').value='';
-  document.getElementById('custPhone').value='';
-  document.getElementById('amount').value='';
-  loadSummary();
-  loadProducts();
-  showScreen('home', document.querySelector('nav.bottom button'));
+  try{
+    await apiPost('addSale', {
+      customerName, phone, type: currentType, item, amount, paymentMode, productId
+    });
+    toast('Entry saved ✓');
+    document.getElementById('custName').value='';
+    document.getElementById('custPhone').value='';
+    document.getElementById('amount').value='';
+    await loadSummary();
+    await loadProducts();
+    showScreen('home', document.querySelector('nav.bottom button'));
+  }catch(err){
+    toast('Save hoyni: ' + err.message);
+  }finally{
+    btn.disabled = false; btn.textContent = 'Save Entry';
+  }
 }
 
 // ---------- HOME / SUMMARY ----------
@@ -400,7 +418,7 @@ async function loadSummary(){
         <div class="amt">৳${s.amount}</div>
       </div>
     `).join('') : '<div class="empty">Aaj ekhono kono sale hoyni</div>';
-  }catch(e){ toast('Summary load hoyni'); }
+  }catch(e){ toast('Summary load hoyni: ' + e.message); }
 }
 
 // ---------- MEMO ----------
