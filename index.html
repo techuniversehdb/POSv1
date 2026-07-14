@@ -29,11 +29,12 @@
   h1,h2,h3{font-family:'Poppins',sans-serif;margin:0;}
   #app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);position:relative;}
 
-  header.top{background:var(--navy);color:#fff;padding:18px 20px 22px;position:sticky;top:0;z-index:10;}
+  header.top{background:var(--navy);color:#fff;padding:18px 20px 22px;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:flex-start;}
   header.top .brand{display:flex;align-items:center;gap:10px;}
   header.top .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--gold);}
   header.top h1{font-size:19px;letter-spacing:.3px;}
   header.top .sub{font-size:12px;color:var(--gold-soft);margin-top:2px;}
+  header.top .gear{background:none;border:none;color:var(--gold-soft);font-size:20px;padding:0;line-height:1;}
 
   main{flex:1;padding:16px 16px 90px;}
   .screen{display:none;animation:fade .2s ease;}
@@ -67,6 +68,7 @@
   .btn-secondary{background:var(--navy);color:#fff;}
   .btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy);}
   .btn:active{transform:scale(.98);}
+  .btn:disabled{opacity:.6;}
 
   .product-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);}
   .product-row:last-child{border-bottom:none;}
@@ -81,53 +83,62 @@
   nav.bottom svg{width:22px;height:22px;}
 
   .empty{text-align:center;padding:30px 10px;color:var(--muted);font-size:13.5px;}
-  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--navy-deep);color:#fff;padding:12px 20px;border-radius:30px;font-size:13.5px;font-weight:500;z-index:50;opacity:0;transition:opacity .25s;pointer-events:none;}
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--navy-deep);color:#fff;padding:12px 20px;border-radius:14px;font-size:13px;font-weight:500;z-index:50;opacity:0;transition:opacity .25s;pointer-events:none;max-width:88%;text-align:center;}
   .toast.show{opacity:1;}
 
   .memo-preview{background:#fff;border:1.5px dashed var(--line);border-radius:12px;padding:16px;font-size:13px;}
   .memo-preview .mrow{display:flex;justify-content:space-between;padding:4px 0;}
   .memo-preview hr{border:none;border-top:1px dashed var(--line);margin:8px 0;}
 
-  #setupScreen{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding:24px;}
+  #setupScreen{display:none;flex-direction:column;justify-content:center;min-height:100vh;padding:24px;}
   #setupScreen .card{margin-top:20px;}
-  .link-btn{background:none;border:none;color:var(--navy);text-decoration:underline;font-size:12.5px;padding:0;margin-top:10px;}
+  .diag-box{font-family:monospace;font-size:11.5px;background:#0B1F3A0d;border-radius:10px;padding:10px;white-space:pre-wrap;word-break:break-word;margin-top:10px;max-height:180px;overflow:auto;}
+  .diag-ok{color:var(--green);}
+  .diag-fail{color:var(--red);}
 </style>
 </head>
 <body>
 
-<div id="setupScreen" style="display:none;">
+<!-- ============================= SETUP / CONNECTION SCREEN ============================= -->
+<div id="setupScreen">
   <div style="text-align:center;">
     <div style="width:56px;height:56px;background:var(--navy);border-radius:16px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;">
       <span style="color:var(--gold);font-family:'Poppins';font-weight:700;font-size:22px;">TU</span>
     </div>
     <h1 style="font-size:20px;">Tech Universe Setup</h1>
-    <p style="color:var(--muted);font-size:13px;margin-top:6px;">Google Apps Script Web App URL</p>
+    <p style="color:var(--muted);font-size:13px;margin-top:6px;">Google Apps Script Web App URL ta boshie din</p>
   </div>
   <div class="card">
-    <label>Apps Script URL (…/exec ends with)</label>
+    <label>Apps Script URL (…/exec diye shesh hobe)</label>
     <input id="scriptUrlInput" placeholder="https://script.google.com/macros/s/xxxx/exec">
+    <button class="btn btn-ghost" onclick="testConnection()">Test Connection</button>
+    <div id="diagBox" class="diag-box" style="display:none;"></div>
     <button class="btn btn-primary" onclick="saveSetup()">Save &amp; Continue</button>
   </div>
 </div>
 
+<!-- ============================= MAIN APP ============================= -->
 <div id="app" style="display:none;">
   <header class="top">
-    <div class="brand"><span class="dot"></span><h1>Tech Universe</h1></div>
-    <div class="sub">Haldibari · Gosala Road</div>
+    <div>
+      <div class="brand"><span class="dot"></span><h1>Tech Universe</h1></div>
+      <div class="sub">Haldibari · Gosala Road</div>
+    </div>
+    <button class="gear" onclick="openSetup()" title="Settings">⚙</button>
   </header>
 
   <main>
     <!-- HOME -->
     <section class="screen active" id="screen-home">
       <div class="stat-row">
-        <div class="stat"><div class="label">Today's Sale</div><div class="value" id="homeTotal">Rs</div></div>
+        <div class="stat"><div class="label">Aajker Sale</div><div class="value" id="homeTotal">৳0</div></div>
         <div class="stat" style="background:var(--gold);color:var(--navy-deep);"><div class="label" style="color:var(--navy-deep);opacity:.7;">Entries</div><div class="value" id="homeCount">0</div></div>
       </div>
 
-      <div class="section-title">Product Type</div>
+      <div class="section-title">Type Onujayi</div>
       <div class="card" id="byTypeCard"></div>
 
-      <div class="section-title">Todays Entries</div>
+      <div class="section-title">Aajker Entries</div>
       <div class="card" id="todaySalesCard"><div class="empty">Loading...</div></div>
     </section>
 
@@ -150,7 +161,7 @@
           <select id="productSelect" onchange="onProductChange()"></select>
         </div>
 
-        <label id="amountLabel">Amount</label>
+        <label id="amountLabel">Amount (৳)</label>
         <input id="amount" type="number" inputmode="numeric" placeholder="0">
 
         <label>Payment Mode</label>
@@ -166,35 +177,35 @@
           <option>EMI - IDFC FIRST Bank</option>
         </select>
 
-        <button class="btn btn-primary" onclick="saveSale()">Save Entry</button>
+        <button class="btn btn-primary" id="saveSaleBtn" onclick="saveSale()">Save Entry</button>
       </div>
     </section>
 
     <!-- PRODUCTS -->
     <section class="screen" id="screen-products">
       <div class="card">
-        <div class="section-title" style="margin-top:0;">New Product</div>
+        <div class="section-title" style="margin-top:0;">Notun Product</div>
         <label>Name</label>
         <input id="pName" placeholder="ex: Samsung M15 128GB">
-        <label>Price Rs</label>
+        <label>Price (৳)</label>
         <input id="pPrice" type="number" inputmode="numeric">
-        <label>Stock</label>
+        <label>Stock (koyta ache)</label>
         <input id="pStock" type="number" inputmode="numeric">
         <button class="btn btn-secondary" onclick="addProduct()">Add Product</button>
       </div>
-      <div class="section-title">Shop Product</div>
+      <div class="section-title">Shob Product</div>
       <div class="card" id="productsCard"><div class="empty">Loading...</div></div>
     </section>
 
     <!-- MEMO -->
     <section class="screen" id="screen-memo">
       <div class="card">
-        <div class="section-title" style="margin-top:0;">Select Entry</div>
-        <select id="memoSaleSelect" onchange="renderMemoPreview()"></select>
+        <div class="section-title" style="margin-top:0;">Ekta Entry Bechhe Nin</div>
+        <select id="memoSaleSelect" onchange="renderMemoPreview()"><option>Loading...</option></select>
       </div>
       <div class="card">
         <div class="section-title" style="margin-top:0;">Cash Memo Preview</div>
-        <div class="memo-preview" id="memoPreview"><div class="empty">Select entry preview</div></div>
+        <div class="memo-preview" id="memoPreview"><div class="empty">Kono entry bachai kore preview dekhun</div></div>
         <button class="btn btn-primary" onclick="downloadMemoPdf()">Download PDF</button>
         <button class="btn btn-secondary" onclick="shareToWhatsapp()">Share on WhatsApp</button>
       </div>
@@ -224,138 +235,254 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const SHOP = { name:"Tech Universe", addr:"Gosala Road, Haldibari, Cooch Behar, WB - 735122", phone:"" };
+/* =====================================================================
+   TECH UNIVERSE SALES APP
+   Single-file frontend. Talks to a Google Apps Script backend deployed
+   as a Web App, which reads/writes a Google Sheet.
+   ===================================================================== */
+
+// ---------------------------------------------------------------------
+// CONFIG
+// ---------------------------------------------------------------------
+const SHOP = {
+  name: "Tech Universe",
+  addr: "Gosala Road, Haldibari, Cooch Behar, WB - 735122"
+};
+
 let SCRIPT_URL = localStorage.getItem('tu_script_url') || '';
+
+// App state (in-memory, refreshed from the sheet on demand)
 let products = [];
 let todaySales = [];
 let currentType = 'Purchase';
 
-if(!SCRIPT_URL){
-  document.getElementById('setupScreen').style.display='flex';
+// ---------------------------------------------------------------------
+// STARTUP
+// ---------------------------------------------------------------------
+if (!SCRIPT_URL) {
+  showSetupScreen();
 } else {
-  document.getElementById('app').style.display='block';
+  document.getElementById('app').style.display = 'block';
   init();
 }
 
-function saveSetup(){
+function showSetupScreen() {
+  document.getElementById('setupScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('scriptUrlInput').value = SCRIPT_URL;
+}
+
+function openSetup() {
+  showSetupScreen();
+}
+
+function saveSetup() {
   const url = document.getElementById('scriptUrlInput').value.trim();
-  if(!url.includes('script.google.com')){ toast('Sothik URL din'); return; }
+  if (!url.includes('script.google.com')) {
+    toast('Sothik URL din (script.google.com diye shuru hobe)');
+    return;
+  }
   localStorage.setItem('tu_script_url', url);
   SCRIPT_URL = url;
-  document.getElementById('setupScreen').style.display='none';
-  document.getElementById('app').style.display='block';
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
   init();
 }
 
-async function init(){
+async function init() {
   await loadProducts();
   await loadSummary();
 }
 
-function showScreen(name, btn){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+name).classList.add('active');
-  document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  if(name==='memo') populateMemoSelect();
-  if(name==='home') loadSummary();
+// ---------------------------------------------------------------------
+// CONNECTION DIAGNOSTIC — shows the exact failure reason on screen,
+// no browser dev tools needed. Use the "Test Connection" button.
+// ---------------------------------------------------------------------
+async function testConnection() {
+  const url = document.getElementById('scriptUrlInput').value.trim();
+  const box = document.getElementById('diagBox');
+  box.style.display = 'block';
+  box.className = 'diag-box';
+  box.textContent = 'Testing... please wait';
+
+  if (!url.includes('script.google.com')) {
+    box.className = 'diag-box diag-fail';
+    box.textContent = 'URL-ta script.google.com diye shuru hocche na. Copy-paste ta abar check korun.';
+    return;
+  }
+  if (!url.endsWith('/exec')) {
+    box.className = 'diag-box diag-fail';
+    box.textContent = 'Warning: URL-ta "/exec" diye shesh hocche na. Deploy > Manage deployments theke thik URL-ta copy korun (dev URL na, exec URL).';
+  }
+
+  try {
+    const testUrl = `${url}?action=getProducts`;
+    const res = await fetch(testUrl);
+    const rawText = await res.text();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (parseErr) {
+      box.className = 'diag-box diag-fail';
+      box.textContent =
+        'FAIL: Response JSON na, ei text ta ashche (mane deployment/permission thik nei):\n\n' +
+        rawText.slice(0, 300);
+      return;
+    }
+
+    if (parsed && parsed.error) {
+      box.className = 'diag-box diag-fail';
+      box.textContent = 'FAIL: Script-e error — ' + parsed.error;
+      return;
+    }
+
+    box.className = 'diag-box diag-ok';
+    box.textContent = 'SUCCESS \u2713 Connection kaj korche.\nProducts found: ' + (Array.isArray(parsed) ? parsed.length : 0);
+  } catch (networkErr) {
+    box.className = 'diag-box diag-fail';
+    box.textContent =
+      'FAIL: ' + networkErr.message + '\n\n' +
+      'Eta shadharonoto ei karone hoy:\n' +
+      '1. Deploy > Manage deployments e "Who has access" = Anyone na thakle\n' +
+      '2. Code.gs change korar por "New version" diye redeploy na korle\n' +
+      '3. URL-e typo thakle';
+  }
 }
 
-function toast(msg){
+// ---------------------------------------------------------------------
+// API LAYER
+// All requests use GET (including writes) — Apps Script's redirect
+// silently converts POST to GET and drops the body, so GET-with-params
+// is the reliable pattern here.
+// ---------------------------------------------------------------------
+async function apiCall(action, params = {}) {
+  const clean = {};
+  Object.keys(params).forEach(k => {
+    if (params[k] !== null && params[k] !== undefined) clean[k] = params[k];
+  });
+  const query = new URLSearchParams({ action, ...clean }).toString();
+
+  const res = await fetch(`${SCRIPT_URL}?${query}`);
+  if (!res.ok) throw new Error('Network error: HTTP ' + res.status);
+
+  const raw = await res.text();
+  let json;
+  try {
+    json = JSON.parse(raw);
+  } catch (e) {
+    throw new Error('Server-er response valid JSON na. Apps Script deployment check korun.');
+  }
+
+  if (json.error) throw new Error(json.error);
+  return json;
+}
+
+// ---------------------------------------------------------------------
+// UI NAVIGATION
+// ---------------------------------------------------------------------
+function showScreen(name, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('nav.bottom button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  if (name === 'memo') {
+    document.getElementById('memoSaleSelect').innerHTML = '<option>Loading...</option>';
+    loadSummary().then(populateMemoSelect);
+  }
+  if (name === 'home') loadSummary();
+}
+
+function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-async function apiGet(action, params={}){
-  const clean = {};
-  Object.keys(params).forEach(k => { if(params[k] !== null && params[k] !== undefined) clean[k]=params[k]; });
-  const q = new URLSearchParams({action, ...clean}).toString();
-  const res = await fetch(`${SCRIPT_URL}?${q}`);
-  if(!res.ok) throw new Error('Network error: ' + res.status);
-  const json = await res.json();
-  if(json.error) throw new Error(json.error);
-  return json;
-}
-// Writes also go through GET — Apps Script's redirect turns POST into GET
-// and silently drops the body, so GET-with-params is the reliable pattern.
-async function apiPost(action, data){
-  return apiGet(action, data);
-}
-
-// ---------- PRODUCTS ----------
-async function loadProducts(){
-  try{
-    products = await apiGet('getProducts');
+// ---------------------------------------------------------------------
+// PRODUCTS
+// ---------------------------------------------------------------------
+async function loadProducts() {
+  try {
+    products = await apiCall('getProducts');
     renderProducts();
     renderProductSelect();
-  }catch(e){ toast('Product load hoyni: ' + e.message); }
+  } catch (e) {
+    toast('Product load hoyni: ' + e.message);
+  }
 }
 
-function renderProducts(){
+function renderProducts() {
   const el = document.getElementById('productsCard');
-  if(!products.length){ el.innerHTML = '<div class="empty">Kono product nei, upore add korun</div>'; return; }
-  el.innerHTML = products.map(p=>`
+  if (!products.length) {
+    el.innerHTML = '<div class="empty">Kono product nei, upore add korun</div>';
+    return;
+  }
+  el.innerHTML = products.map(p => `
     <div class="product-row">
       <div>
         <div class="pname">${p.name}</div>
-        <div class="pmeta">Rs${p.price} · Stock: <span class="${p.stock<=2?'stock-low':''}">${p.stock}</span></div>
+        <div class="pmeta">৳${p.price} · Stock: <span class="${p.stock <= 2 ? 'stock-low' : ''}">${p.stock}</span></div>
       </div>
       <div class="edit-icon" onclick="deleteProductRow('${p.id}')">✕</div>
     </div>
   `).join('');
 }
 
-function renderProductSelect(){
+function renderProductSelect() {
   const sel = document.getElementById('productSelect');
-  sel.innerHTML = products.map(p=>`<option value="${p.id}" data-price="${p.price}">${p.name} (৳${p.price})</option>`).join('');
+  sel.innerHTML = products.map(p => `<option value="${p.id}" data-price="${p.price}">${p.name} (৳${p.price})</option>`).join('');
 }
 
-function onProductChange(){
+function onProductChange() {
   const sel = document.getElementById('productSelect');
   const opt = sel.options[sel.selectedIndex];
-  if(opt) document.getElementById('amount').value = opt.dataset.price;
+  if (opt) document.getElementById('amount').value = opt.dataset.price;
 }
 
-async function addProduct(){
+async function addProduct() {
   const name = document.getElementById('pName').value.trim();
   const price = document.getElementById('pPrice').value;
   const stock = document.getElementById('pStock').value;
-  if(!name || !price){ toast('Name o Price din'); return; }
-  try{
-    await apiPost('addProduct', {name, price, stock: stock||0});
-    document.getElementById('pName').value='';
-    document.getElementById('pPrice').value='';
-    document.getElementById('pStock').value='';
+  if (!name || !price) { toast('Name o Price din'); return; }
+
+  try {
+    await apiCall('addProduct', { name, price, stock: stock || 0 });
+    document.getElementById('pName').value = '';
+    document.getElementById('pPrice').value = '';
+    document.getElementById('pStock').value = '';
     toast('Product added ✓');
     loadProducts();
-  }catch(err){
+  } catch (err) {
     toast('Save hoyni: ' + err.message);
   }
 }
 
-async function deleteProductRow(id){
-  if(!confirm('Delete korte chan?')) return;
-  try{
-    await apiPost('deleteProduct', {id});
+async function deleteProductRow(id) {
+  if (!confirm('Delete korte chan?')) return;
+  try {
+    await apiCall('deleteProduct', { id });
     loadProducts();
-  }catch(err){
+  } catch (err) {
     toast('Delete hoyni: ' + err.message);
   }
 }
 
-// ---------- NEW SALE ----------
-function setType(type){
+// ---------------------------------------------------------------------
+// NEW SALE
+// ---------------------------------------------------------------------
+function setType(type) {
   currentType = type;
-  document.getElementById('typePurchase').classList.toggle('active', type==='Purchase');
-  document.getElementById('typeRecharge').classList.toggle('active', type==='Recharge');
-  document.getElementById('productField').style.display = type==='Purchase' ? 'block' : 'none';
-  document.getElementById('amountLabel').textContent = type==='Recharge' ? 'Recharge Amount Rs' : 'Amount Rs';
-  if(type==='Recharge') document.getElementById('amount').value='';
+  document.getElementById('typePurchase').classList.toggle('active', type === 'Purchase');
+  document.getElementById('typeRecharge').classList.toggle('active', type === 'Recharge');
+  document.getElementById('productField').style.display = type === 'Purchase' ? 'block' : 'none';
+  document.getElementById('amountLabel').textContent = type === 'Recharge' ? 'Recharge Amount (৳)' : 'Amount (৳)';
+  if (type === 'Recharge') document.getElementById('amount').value = '';
 }
 
-async function saveSale(){
+async function saveSale() {
   const customerName = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
   const amount = document.getElementById('amount').value;
@@ -363,81 +490,92 @@ async function saveSale(){
   let item = 'Mobile Recharge';
   let productId = null;
 
-  if(!customerName || !phone || !amount){ toast('Fill all'); return; }
+  if (!customerName || !phone || !amount) { toast('Shob field pooron korun'); return; }
 
-  if(currentType === 'Purchase'){
+  if (currentType === 'Purchase') {
     const sel = document.getElementById('productSelect');
     const opt = sel.options[sel.selectedIndex];
-    if(!opt){ toast('Add Product'); return; }
+    if (!opt) { toast('Product add korun age'); return; }
     item = opt.text;
     productId = opt.value;
   }
 
-  const btn = event.target;
-  btn.disabled = true; btn.textContent = 'Saving...';
+  const btn = document.getElementById('saveSaleBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
 
-  try{
-    await apiPost('addSale', {
-      customerName, phone, type: currentType, item, amount, paymentMode, productId
-    });
+  try {
+    await apiCall('addSale', { customerName, phone, type: currentType, item, amount, paymentMode, productId });
     toast('Entry saved ✓');
-    document.getElementById('custName').value='';
-    document.getElementById('custPhone').value='';
-    document.getElementById('amount').value='';
+    document.getElementById('custName').value = '';
+    document.getElementById('custPhone').value = '';
+    document.getElementById('amount').value = '';
     await loadSummary();
     await loadProducts();
     showScreen('home', document.querySelector('nav.bottom button'));
-  }catch(err){
+  } catch (err) {
     toast('Save hoyni: ' + err.message);
-  }finally{
-    btn.disabled = false; btn.textContent = 'Save Entry';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Entry';
   }
 }
 
-// ---------- HOME / SUMMARY ----------
-async function loadSummary(){
-  try{
-    const s = await apiGet('getSummary');
+// ---------------------------------------------------------------------
+// HOME / SUMMARY
+// ---------------------------------------------------------------------
+async function loadSummary() {
+  try {
+    const s = await apiCall('getSummary');
     document.getElementById('homeTotal').textContent = '৳' + Number(s.total).toLocaleString('en-IN');
     document.getElementById('homeCount').textContent = s.count;
     todaySales = s.sales || [];
 
     const typeCard = document.getElementById('byTypeCard');
     const entries = Object.entries(s.byType || {});
-    typeCard.innerHTML = entries.length ? entries.map(([k,v])=>`
-      <div class="sale-item"><div class="who">${k}</div><div class="amt">Rs${Number(v).toLocaleString('en-IN')}</div></div>
-    `).join('') : '<div class="empty">No Entries</div>';
+    typeCard.innerHTML = entries.length
+      ? entries.map(([k, v]) => `<div class="sale-item"><div class="who">${k}</div><div class="amt">৳${Number(v).toLocaleString('en-IN')}</div></div>`).join('')
+      : '<div class="empty">Ekhono kono entry nei</div>';
 
     const listCard = document.getElementById('todaySalesCard');
-    listCard.innerHTML = todaySales.length ? todaySales.map(s=>`
-      <div class="sale-item">
-        <div>
-          <div class="who">#${s.serial} ${s.customerName}</div>
-          <div class="meta"><span class="badge">${s.type}</span>${s.item}</div>
-        </div>
-        <div class="amt">Rs${s.amount}</div>
-      </div>
-    `).join('') : '<div class="empty">No Sales today</div>';
-  }catch(e){ toast('Summary load hoyni: ' + e.message); }
+    listCard.innerHTML = todaySales.length
+      ? todaySales.map(s => `
+          <div class="sale-item">
+            <div>
+              <div class="who">#${s.serial} ${s.customerName}</div>
+              <div class="meta"><span class="badge">${s.type}</span>${s.item}</div>
+            </div>
+            <div class="amt">৳${s.amount}</div>
+          </div>`).join('')
+      : '<div class="empty">Aaj ekhono kono sale hoyni</div>';
+  } catch (e) {
+    toast('Summary load hoyni: ' + e.message);
+  }
 }
 
-// ---------- MEMO ----------
-function populateMemoSelect(){
+// ---------------------------------------------------------------------
+// CASH MEMO
+// ---------------------------------------------------------------------
+function populateMemoSelect() {
   const sel = document.getElementById('memoSaleSelect');
-  if(!todaySales.length){ sel.innerHTML = '<option>Kono entry nei</option>'; return; }
-  sel.innerHTML = todaySales.map((s,i)=>`<option value="${i}">#${s.serial} — ${s.customerName} (৳${s.amount})</option>`).join('');
+  if (!todaySales.length) {
+    sel.innerHTML = '<option>Kono entry nei</option>';
+    document.getElementById('memoPreview').innerHTML = '<div class="empty">Kono entry nei</div>';
+    return;
+  }
+  sel.innerHTML = todaySales.map((s, i) => `<option value="${i}">#${s.serial} — ${s.customerName} (৳${s.amount})</option>`).join('');
   renderMemoPreview();
 }
 
-function getSelectedSale(){
+function getSelectedSale() {
   const sel = document.getElementById('memoSaleSelect');
   return todaySales[sel.value];
 }
 
-function renderMemoPreview(){
+function renderMemoPreview() {
   const s = getSelectedSale();
   const el = document.getElementById('memoPreview');
-  if(!s){ el.innerHTML = '<div class="empty">Kono entry nei</div>'; return; }
+  if (!s) { el.innerHTML = '<div class="empty">Kono entry nei</div>'; return; }
   el.innerHTML = `
     <div class="mrow"><b>${SHOP.name}</b><span>#${s.serial}</span></div>
     <div style="font-size:11px;color:var(--muted);">${SHOP.addr}</div>
@@ -449,79 +587,91 @@ function renderMemoPreview(){
     <div class="mrow"><span>${s.item}</span><span>৳${s.amount}</span></div>
     <hr>
     <div class="mrow"><b>Total</b><b>৳${s.amount}</b></div>
-    <div class="mrow"><span>Payment</span><span>${s.paymentMode||'-'}</span></div>
+    <div class="mrow"><span>Payment</span><span>${s.paymentMode || '-'}</span></div>
   `;
 }
 
-function buildPdf(){
+function buildPdf() {
   const s = getSelectedSale();
-  if(!s) return null;
+  if (!s) return null;
+  if (!window.jspdf) { toast('PDF library load hoyni — internet check korun'); return null; }
+
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({unit:'mm', format:[80, 130]});
+  const doc = new jsPDF({ unit: 'mm', format: [80, 130] });
   let y = 10;
-  doc.setFont('helvetica','bold'); doc.setFontSize(13);
-  doc.text(SHOP.name, 40, y, {align:'center'}); y+=5;
-  doc.setFont('helvetica','normal'); doc.setFontSize(8);
-  doc.text(SHOP.addr, 40, y, {align:'center', maxWidth:70}); y+=8;
-  doc.setLineDashPattern([1,1],0); doc.line(5,y,75,y); y+=6;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+  doc.text(SHOP.name, 40, y, { align: 'center' }); y += 5;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+  doc.text(SHOP.addr, 40, y, { align: 'center', maxWidth: 70 }); y += 8;
+  doc.setLineDashPattern([1, 1], 0); doc.line(5, y, 75, y); y += 6;
 
   doc.setFontSize(9);
-  doc.text(`Memo No: #${s.serial}`, 5, y); y+=5;
-  doc.text(`Date: ${s.date}`, 5, y); y+=5;
-  doc.text(`Customer: ${s.customerName}`, 5, y); y+=5;
-  doc.text(`Phone: ${s.phone}`, 5, y); y+=6;
-  doc.line(5,y,75,y); y+=6;
+  doc.text(`Memo No: #${s.serial}`, 5, y); y += 5;
+  doc.text(`Date: ${s.date}`, 5, y); y += 5;
+  doc.text(`Customer: ${s.customerName}`, 5, y); y += 5;
+  doc.text(`Phone: ${s.phone}`, 5, y); y += 6;
+  doc.line(5, y, 75, y); y += 6;
 
-  doc.setFont('helvetica','bold');
-  doc.text('Item', 5, y); doc.text('Amount', 75, y, {align:'right'}); y+=5;
-  doc.setFont('helvetica','normal');
-  doc.text(String(s.item), 5, y, {maxWidth:45}); doc.text('Rs.'+s.amount, 75, y, {align:'right'}); y+=8;
-  doc.line(5,y,75,y); y+=6;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Item', 5, y); doc.text('Amount', 75, y, { align: 'right' }); y += 5;
+  doc.setFont('helvetica', 'normal');
+  doc.text(String(s.item), 5, y, { maxWidth: 45 }); doc.text('Rs.' + s.amount, 75, y, { align: 'right' }); y += 8;
+  doc.line(5, y, 75, y); y += 6;
 
-  doc.setFont('helvetica','bold'); doc.setFontSize(10);
-  doc.text('Total', 5, y); doc.text('Rs.'+s.amount, 75, y, {align:'right'}); y+=6;
-  doc.setFont('helvetica','normal'); doc.setFontSize(8);
-  doc.text(`Payment: ${s.paymentMode||'-'}`, 5, y); y+=8;
-  doc.setFontSize(7); doc.text('Thank you for shopping with us!', 40, y, {align:'center'});
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+  doc.text('Total', 5, y); doc.text('Rs.' + s.amount, 75, y, { align: 'right' }); y += 6;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+  doc.text(`Payment: ${s.paymentMode || '-'}`, 5, y); y += 8;
+  doc.setFontSize(7); doc.text('Thank you for shopping with us!', 40, y, { align: 'center' });
 
   return doc;
 }
 
-function downloadMemoPdf(){
+function downloadMemoPdf() {
   const doc = buildPdf();
-  if(!doc){ toast('Entry select korun'); return; }
   const s = getSelectedSale();
+  if (!doc || !s) { toast('Entry select korun'); return; }
   doc.save(`CashMemo-${s.serial}-${s.customerName}.pdf`);
 }
 
-async function shareToWhatsapp(){
+async function shareToWhatsapp() {
   const doc = buildPdf();
   const s = getSelectedSale();
-  if(!doc){ toast('Entry select korun'); return; }
-  const blob = doc.output('blob');
-  const file = new File([blob], `CashMemo-${s.serial}.pdf`, {type:'application/pdf'});
+  if (!doc || !s) { toast('Entry select korun'); return; }
 
-  if(navigator.canShare && navigator.canShare({files:[file]})){
-    try{
+  const blob = doc.output('blob');
+  const file = new File([blob], `CashMemo-${s.serial}.pdf`, { type: 'application/pdf' });
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
       await navigator.share({
-        files:[file],
-        title:'Cash Memo',
-        text:`${SHOP.name} — Cash Memo #${s.serial} for ${s.customerName}`
+        files: [file],
+        title: 'Cash Memo',
+        text: `${SHOP.name} — Cash Memo #${s.serial} for ${s.customerName}`
       });
       return;
-    }catch(err){ /* user cancelled, fall through */ }
+    } catch (err) {
+      // user cancelled the share sheet — fall through to the manual fallback
+    }
   }
-  // Fallback: download PDF and open WhatsApp with text
+
+  // Fallback for browsers without file-sharing support
   doc.save(`CashMemo-${s.serial}-${s.customerName}.pdf`);
-  const msg = encodeURIComponent(`${SHOP.name} — Cash Memo #${s.serial}\nCustomer: ${s.customerName}\nAmount: ৳${s.amount}\n(PDF downloaded — please attach it here)`);
-  const phone = s.phone.replace(/\D/g,'');
-  window.open(`https://wa.me/${phone.length===10?'91'+phone:phone}?text=${msg}`, '_blank');
+  const msg = encodeURIComponent(
+    `${SHOP.name} — Cash Memo #${s.serial}\nCustomer: ${s.customerName}\nAmount: ৳${s.amount}\n(PDF downloaded — please attach it here)`
+  );
+  const digitsOnly = s.phone.replace(/\D/g, '');
+  const phoneWithCode = digitsOnly.length === 10 ? '91' + digitsOnly : digitsOnly;
+  window.open(`https://wa.me/${phoneWithCode}?text=${msg}`, '_blank');
 }
 
+// ---------------------------------------------------------------------
+// INIT
+// ---------------------------------------------------------------------
 setType('Purchase');
 
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 </script>
 </body>
